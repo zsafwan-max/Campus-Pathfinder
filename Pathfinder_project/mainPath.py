@@ -49,16 +49,10 @@ def main():
             continue
 
         print(f"\nCalculating {mode} path from {start} to {end}...\n")
-        path, cost, trace = dijkstra(graph, start, end, mode=mode)
+        path, cost = dijkstra(graph, start, end, mode=mode)
 
-        # Step-by-step trace (Option B)
-        if trace:
-            print("Trace (steps explored to build the found path):")
-            for t in trace:
-                print("  -", t)
-            print()
-
-        print(format_result(path, cost, mode))
+        
+        print(format_result(path, cost))
 
 if __name__ == "__main__":
     main()

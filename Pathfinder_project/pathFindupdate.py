@@ -152,25 +152,64 @@ def format_result(path, total_time):
     return result
 
 # --- Run test ---
-if __name__ == "__main__":
+import json
+import sys
+
+def run_json_mode():
+    """Handles JSON output mode when script is called from Node.js."""
+    if len(sys.argv) < 3:
+        print(json.dumps({"error": "Missing arguments"}))
+        return
+
+    start = sys.argv[1]
+    end = sys.argv[2]
+    mode = sys.argv[3] if len(sys.argv) > 3 else "shortest"
+
     g = Graph()
-
-    print("Memorial University Campus Pathfinder\n")
-    print("Available Buildings:")
-    for i, b in enumerate(BUILDINGS, 1):
-        print(f"{i}. {b}")
-
-    start_idx = int(input("\nEnter start building number: ")) - 1
-    end_idx = int(input("Enter destination building number: ")) - 1
-
-    print("\nSelect route mode:")
-    print("1. Shortest route")
-    print("2. Accessible route")
-    mode_choice = input("Enter 1 or 2: ")
-    mode = "accessible" if mode_choice == "2" else "shortest"
-
-    start = BUILDINGS[start_idx]
-    end = BUILDINGS[end_idx]
-
     path, total_time = dijkstra(g, start, end, mode)
-    print(format_result(path, total_time))
+
+    # Convert path into JSON-friendly structure
+    path_json = []
+    for a, b, label in path:
+        path_json.append({
+            "from": a,
+            "to": b,
+            "label": label
+        })
+
+    output = {
+        "path": path_json,
+        "total_time": round(total_time, 2)
+    }
+
+    print(json.dumps(output))
+
+
+if __name__ == "__main__":
+    # If script is called *with arguments* ⇒ Node.js backend mode
+    if len(sys.argv) > 1:
+        run_json_mode()
+
+    # Otherwise ⇒ Normal terminal mode
+    else:
+        g = Graph()
+
+        print("Memorial University Campus Pathfinder\n")
+        print("Available Buildings:")
+        for i, b in enumerate(BUILDINGS, 1):
+            print(f"{i}. {b}")
+
+        start_idx = int(input("\nEnter start building number: ")) - 1
+        end_idx = int(input("Enter destination building number: ")) - 1
+
+        print("\nSelect route mode:")
+        print("1. Shortest route")
+        print("2. Accessible route")
+        mode_choice = input("Enter 1 or 2: ")
+        mode = "accessible" if mode_choice == "2" else "shortest"
+
+        start = BUILDINGS[start_idx]
+        end = BUILDINGS[end_idx]
+
+        path, total_time = dijkstra(g, start, end, mode)
+        print(format_result(path, total_time))
