@@ -1,15 +1,16 @@
 // server.js
 // Backend for Pathfinder Web Project
-// Uses Express.js and Python integration
+// Uses Express.js and PythonShell to run Python pathfinder
 
 const express = require("express");
 const { PythonShell } = require("python-shell");
+const path = require("path");
 const app = express();
 const port = 5000;
 
 app.use(express.json());
 
-// Endpoint to run the Python pathfinding script
+// Endpoint to run Python pathfinding
 app.post("/find-path", (req, res) => {
   const { start, end, mode } = req.body;
 
@@ -17,17 +18,19 @@ app.post("/find-path", (req, res) => {
     return res.status(400).json({ error: "Please provide start and end points." });
   }
 
-  // Options for running the Python script
+  // Correct script path — points to your Python folder
+  const scriptPath = path.join(__dirname, "../../Pathfinder_project");
+
   const options = {
     mode: "json",
     pythonOptions: ["-u"],
-    scriptPath: "../Pathfinder project", // <-- update this to your actual folder path
-    args: [start, end, mode || "normal"]
+    scriptPath: scriptPath,
+    args: [start, end, mode || "shortest"]
   };
 
-  PythonShell.run("pathFindUpdate.py", options)
+  PythonShell.run("pathFindupdate.py", options)
     .then(results => {
-      res.json(results[0]); // Send back Python script output
+      res.json(results[0]); // return Python JSON output
     })
     .catch(err => {
       console.error("Error running Python script:", err);
@@ -35,7 +38,6 @@ app.post("/find-path", (req, res) => {
     });
 });
 
-// Start the server
 app.listen(port, () => {
-  console.log(`Pathfinder backend running on http://localhost:${port}`);
+  console.log(`Pathfinder backend running at http://localhost:${port}`);
 });
