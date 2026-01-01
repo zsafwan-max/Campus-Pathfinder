@@ -1,32 +1,32 @@
 // server.js
 // Backend for Pathfinder Web Project
-// Uses Express.js and PythonShell to run Python pathfinder
+// Use Express.js and PythonShell to run Python pathfinder
 
 const express = require("express");
 const { PythonShell } = require("python-shell");
 const path = require("path");
 const app = express();
-const port = 5001; // Change from 5000 to 5001
+const port = 5001; 
 
 app.use(express.json());
 
 // Add a root route for testing
 app.get("/", (req, res) => {
-  res.send("✅ Pathfinder backend is running!");
+  res.send("Pathfinder backend is running!");
 });
 
 app.post("/find-path", (req, res) => {
   const { start, end, mode } = req.body;
 
-  console.log("📥 Received request:", start, end, mode);
+  console.log("Received request:", start, end, mode);
 
   if (!start || !end) {
     return res.status(400).json({ error: "Please provide start and end points." });
   }
 
-  // FIXED PATH — you must confirm this folder name
+  
   const scriptPath = path.join(__dirname, "../Pathfinder_project");
-  console.log("📂 Using scriptPath:", scriptPath);
+  console.log("Using scriptPath:", scriptPath);
 
   const options = {
     mode: "json",
@@ -36,47 +36,47 @@ app.post("/find-path", (req, res) => {
     args: [start, end, mode || "shortest"]
   };
 
-  console.log("⚙️ PythonShell options:", options);
+  console.log("PythonShell options:", options);
 
   PythonShell.run("pathFindupdate.py", options)
     .then(results => {
-      console.log("🐍 Python returned:", results);
+      console.log("Python returned:", results);
       res.json(results[0] || {});
     })
     .catch(err => {
-      console.error("❌ Error running Python script:", err);
+      console.error("Error running Python script:", err);
       res.status(500).json({ error: "Failed to compute path." });
     });
 });
 
-// Add error handling for server startup
+// Adding error handling for server startup
 const server = app.listen(port, () => {
-  console.log(`✅ Pathfinder backend running at http://localhost:${port}`);
+  console.log(`Pathfinder backend running at http://localhost:${port}`);
 }).on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
-    console.error(`❌ Port ${port} is already in use. Please use a different port.`);
+    console.error(`Port ${port} is already in use. Please use a different port.`);
   } else {
-    console.error('❌ Server failed to start:', err);
+    console.error('Server failed to start:', err);
   }
   process.exit(1);
 });
 
 // Handle graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\n🛑 Shutting down server...');
+  console.log('\nShutting down server...');
   server.close(() => {
-    console.log('✅ Server closed');
+    console.log('Server closed');
     process.exit(0);
   });
 });
 
 // Keep the process alive - handle uncaught errors
 process.on('uncaughtException', (err) => {
-  console.error('❌ Uncaught Exception:', err);
+  console.error('Uncaught Exception:', err);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-console.log("🚀 Starting server...");
+console.log("Starting server...");
