@@ -27,17 +27,31 @@ function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
 
-  function handleFindPath() {
+  async function handleFindPath() {
     setError("");
     setResult(null);
 
-    // For now, just show what user selected (API next step)
-    setResult({
-      path: [{ from: start, to: end, label: mode }],
-      total_time: 0,
-    });
-  }
+    try {
+      const res = await fetch("http://localhost:5001/find-path", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ start, end, mode }),
+      });
 
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data?.error || "Backend error");
+        return;
+      }
+
+      setResult(data);
+    } catch (err) {
+      setError(
+        "Could not reach backend. Make sure your Node server is running on port 5001."
+      );
+    }
+  }
   return (
     <div style={{ padding: "20px", maxWidth: "700px" }}>
       <h1>Campus Pathfinder</h1>

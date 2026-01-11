@@ -2,6 +2,7 @@
 // Backend for Pathfinder Web Project
 // Use Express.js and PythonShell to run Python pathfinder
 
+const cors = require("cors");
 const express = require("express");
 const { PythonShell } = require("python-shell");
 const path = require("path");
@@ -9,6 +10,7 @@ const app = express();
 const port = 5001; 
 
 app.use(express.json());
+app.use(cors());
 
 // Add a root route for testing
 app.get("/", (req, res) => {
